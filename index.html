@@ -177,6 +177,7 @@ window.__imagekit = {
   urlEndpoint: IMAGEKIT_URL_ENDPOINT,
   authEndpoint: IMAGEKIT_AUTH_ENDPOINT
 };
+window.__logoIcon = LOGO_ICON_SRC;
 window.dispatchEvent(new Event("firebase-ready"));
 </script>
 
@@ -240,7 +241,7 @@ function Header({ user, onLogout }){
   return (
     <header className="top">
       <div className="brand">
-        <img src={LOGO_ICON_SRC} alt="Silhoe Academy" style={{width:38, height:38, objectFit:"contain", flexShrink:0}} />
+        <img src={window.__logoIcon} alt="Silhoe Academy" style={{width:38, height:38, objectFit:"contain", flexShrink:0}} />
         <div>
           <h1>Silhoe Academy</h1>
           <span className="tag">educación informal</span>
