@@ -204,6 +204,11 @@ function youTubeEmbed(url){
       const parts = u.pathname.split("/").filter(Boolean);
       return "https://player.vimeo.com/video/" + parts[parts.length-1];
     }
+    if(u.hostname.includes("drive.google.com")){
+      const match = u.pathname.match(/\/d\/([^/]+)/);
+      const fileId = match ? match[1] : u.searchParams.get("id");
+      if(fileId) return "https://drive.google.com/file/d/" + fileId + "/preview";
+    }
   }catch(e){ return null; }
   return null;
 }
@@ -467,7 +472,7 @@ function CourseEditorCard({ course, open, onToggle, onChanged, onRemove }){
             </div>
             <div className="row">
               <div className="field">
-                <label>Enlace del video (YouTube o Vimeo, no listado)</label>
+                <label>Enlace del video (YouTube, Vimeo o Google Drive)</label>
                 <input value={lVideo} onChange={e => setLVideo(e.target.value)} placeholder="https://youtu.be/..." />
               </div>
               <div className="field">
