@@ -1,0 +1,14 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /courses/{code} {
+      // Cualquiera que tenga el código exacto puede LEER ese curso (estudiantes)
+      allow get: if true;
+      // Solo el instructor con sesión iniciada puede LISTAR todos los cursos
+      allow list: if request.auth != null;
+      // Solo el instructor con sesión iniciada puede crear, editar o borrar
+      allow write: if request.auth != null;
+    }
+  }
+}

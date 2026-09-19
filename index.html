@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Silhoe Academy — Cursos</title>
+<style>
+  :root{
+    --navy: #6D28D9;
+    --navy-deep: #180B2E;
+    --paper: #FBF8F2;
+    --paper-line: #E7E1D3;
+    --amber: #08D9CE;
+    --amber-deep: #049E96;
+    --ink: #1C1B18;
+    --ink-muted: #6E685C;
+    --ok: #2F6D4F;
+    --err: #B5432B;
+    --radius: 3px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--navy);
+    color:var(--ink);
+    font-family: ui-sans-serif, "Segoe UI", Inter, system-ui, sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{
+    font-family: ui-serif, Georgia, "Times New Roman", serif;
+    font-weight:600;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .app{
+    max-width:920px;
+    margin:0 auto;
+    min-height:100vh;
+    background:var(--paper);
+    box-shadow:0 0 40px rgba(0,0,0,0.25);
+  }
+  header.top{
+    background:var(--navy-deep);
+    color:var(--paper);
+    padding:22px 28px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  header.top .brand{ display:flex; align-items:center; gap:12px; }
+  header.top .brand-mark{
+    width:38px; height:38px; border-radius:50%;
+    background:linear-gradient(135deg, var(--amber), var(--navy));
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-weight:700; font-size:0.95rem; font-family:ui-serif, Georgia, serif;
+    flex-shrink:0;
+  }
+  header.top h1{ color:var(--paper); font-size:1.3rem; }
+  header.top .tag{ color:var(--amber); font-size:0.8rem; }
+  main{ padding:32px 28px 60px; }
+  .lead{ color:var(--ink-muted); max-width:52ch; line-height:1.55; margin:6px 0 28px; }
+  label{ display:block; font-size:0.82rem; color:var(--ink-muted); margin-bottom:5px; }
+  input, textarea{
+    width:100%; font-family:inherit; font-size:0.95rem; padding:10px 12px;
+    border:1px solid var(--paper-line); border-radius:var(--radius); background:#fff; color:var(--ink);
+  }
+  input:focus, textarea:focus, button:focus-visible{ outline:2px solid var(--amber); outline-offset:1px; }
+  .field{ margin-bottom:16px; }
+  .row{ display:flex; gap:14px; flex-wrap:wrap; }
+  .row > .field{ flex:1; min-width:200px; }
+  button.primary{
+    background:var(--navy); color:var(--paper); border:none; padding:11px 22px;
+    border-radius:var(--radius); font-size:0.92rem; cursor:pointer; font-family:inherit; font-weight:600;
+  }
+  button.primary:disabled{ opacity:0.6; cursor:default; }
+  button.primary:hover:not(:disabled){ background:var(--navy-deep); }
+  button.ghost{
+    background:transparent; border:1px solid var(--paper-line); color:var(--ink);
+    padding:9px 16px; border-radius:var(--radius); font-size:0.85rem; cursor:pointer; font-family:inherit;
+  }
+  button.ghost:hover{ border-color:var(--ink-muted); }
+  .card{ background:#fff; border:1px solid var(--paper-line); border-radius:var(--radius); padding:22px; margin-bottom:18px; }
+  .course-card{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+  .course-card h3{ font-size:1.15rem; margin-bottom:4px; }
+  .course-card p{ color:var(--ink-muted); margin:0 0 10px; font-size:0.9rem; line-height:1.5; }
+  .code-pill{
+    display:inline-flex; align-items:center; gap:6px; background:var(--paper);
+    border:1px dashed var(--amber-deep); color:var(--amber-deep); font-weight:700; letter-spacing:0.04em;
+    padding:5px 12px; border-radius:999px; font-size:0.85rem; font-family: ui-monospace, Menlo, monospace;
+  }
+  .lesson-list{ list-style:none; padding:0; margin:14px 0 0; }
+  .lesson-list li{
+    display:flex; align-items:center; justify-content:space-between; padding:10px 0;
+    border-top:1px solid var(--paper-line); font-size:0.9rem; gap:10px;
+  }
+  .lesson-list li .name{ display:flex; align-items:center; gap:10px; }
+  .lesson-num{
+    width:22px; height:22px; border-radius:50%; background:var(--navy); color:var(--paper);
+    font-size:0.72rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .empty{ text-align:center; padding:50px 20px; color:var(--ink-muted); }
+  .empty h3{ color:var(--ink); margin-bottom:8px; }
+  .login-box{ max-width:380px; margin:20px auto 0; text-align:center; }
+  .login-box .card{ text-align:left; }
+  .login-box h2{ margin-bottom:4px; font-size:1.3rem; }
+  .error-msg{ color:var(--err); font-size:0.85rem; margin-top:8px; }
+  .ok-msg{ color:var(--ok); font-size:0.85rem; margin-top:8px; }
+  .student-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:22px; flex-wrap:wrap; gap:10px; }
+  .student-header .who{ font-size:0.88rem; color:var(--ink-muted); }
+  .video-embed{ position:relative; width:100%; padding-top:56.25%; background:var(--navy-deep); border-radius:var(--radius); overflow:hidden; margin-top:10px; }
+  .video-embed iframe{ position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+  .lesson-detail{ margin-top:24px; }
+  .lesson-detail h3{ font-size:1.05rem; margin-bottom:4px; }
+  .slides-link{ display:inline-block; margin-top:10px; font-size:0.85rem; color:var(--navy); text-decoration:underline; text-underline-offset:2px; }
+  .section-title{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+  .note{
+    font-size:0.78rem; color:var(--ink-muted); background:var(--paper); border:1px solid var(--paper-line);
+    border-radius:var(--radius); padding:10px 14px; margin-top:18px; line-height:1.5;
+  }
+  .add-lesson-form{ border-top:1px solid var(--paper-line); margin-top:16px; padding-top:16px; }
+  .progress{ font-size:0.8rem; color:var(--ink-muted); margin-top:8px; }
+  .file-input-wrap{
+    border:1px dashed var(--paper-line); border-radius:var(--radius); padding:14px; text-align:center;
+    font-size:0.85rem; color:var(--ink-muted); cursor:pointer;
+  }
+  .file-input-wrap.has-file{ border-color:var(--amber-deep); color:var(--ink); }
+  .top-right{ display:flex; align-items:center; gap:12px; }
+</style>
+</head>
+<body>
+<div id="root" class="app"><div style="padding:40px; color:#6E685C;">Cargando…</div></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, arrayUnion, deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+// ---- Configuración de Firebase (Silhoe Academy) ----
+const firebaseConfig = {
+  apiKey: "AIzaSyCFVDSS50PlKqx2ZHQJVipnheRJQ-WHJBw",
+  authDomain: "silhoe-academy-app.firebaseapp.com",
+  projectId: "silhoe-academy-app",
+  storageBucket: "silhoe-academy-app.firebasestorage.app",
+  messagingSenderId: "847583873529",
+  appId: "1:847583873529:web:14bb3667c96ee208e45528",
+  measurementId: "G-DWBV12Q3HS"
+};
+
+// ---- Configuración de ImageKit (solo datos públicos) ----
+const IMAGEKIT_PUBLIC_KEY = "public_C/kOg7ZcTAcdLBn/FjL2mZgAqoc=";
+const IMAGEKIT_URL_ENDPOINT = "https://ik.imagekit.io/tcu7xayhl";
+const IMAGEKIT_AUTH_ENDPOINT = "/api/imagekit-auth"; // función serverless de Vercel
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+window.React;
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+<script type="text/babel" data-type="module">
+const { useState, useEffect } = React;
+
+// Estos objetos fueron creados en el módulo anterior y colgados de window
+// para poder usarlos desde este bloque Babel (que no es un módulo ES).
+</script>
+
+<script type="module">
+// Puente: exponemos las instancias de Firebase e ImageKit al scope global
+// para que el bloque de React (Babel, no-módulo) pueda usarlas.
+window.__firebaseAuth = auth;
+window.__firestoreDb = db;
+window.__fb = {
+  doc, getDoc, setDoc, updateDoc, collection, getDocs, arrayUnion, deleteDoc,
+  signInWithEmailAndPassword, onAuthStateChanged, signOut
+};
+window.__imagekit = {
+  publicKey: IMAGEKIT_PUBLIC_KEY,
+  urlEndpoint: IMAGEKIT_URL_ENDPOINT,
+  authEndpoint: IMAGEKIT_AUTH_ENDPOINT
+};
+window.dispatchEvent(new Event("firebase-ready"));
+</script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+function youTubeEmbed(url){
+  if(!url) return null;
+  try{
+    const u = new URL(url);
+    if(u.hostname.includes("youtu.be")) return "https://www.youtube.com/embed/" + u.pathname.slice(1);
+    if(u.hostname.includes("youtube.com")){
+      const id = u.searchParams.get("v");
+      if(id) return "https://www.youtube.com/embed/" + id;
+      if(u.pathname.startsWith("/embed/")) return url;
+    }
+    if(u.hostname.includes("vimeo.com")){
+      const parts = u.pathname.split("/").filter(Boolean);
+      return "https://player.vimeo.com/video/" + parts[parts.length-1];
+    }
+  }catch(e){ return null; }
+  return null;
+}
+
+function genCode(){
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let s = "";
+  for(let i=0;i<6;i++) s += chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+
+async function uploadToImageKit(file, onProgress){
+  const ik = window.__imagekit;
+  const authRes = await fetch(ik.authEndpoint);
+  if(!authRes.ok) throw new Error("No se pudo autenticar la subida.");
+  const authData = await authRes.json();
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("fileName", file.name);
+  formData.append("publicKey", ik.publicKey);
+  formData.append("signature", authData.signature);
+  formData.append("expire", authData.expire);
+  formData.append("token", authData.token);
+  formData.append("useUniqueFileName", "true");
+
+  const res = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
+    method: "POST",
+    body: formData
+  });
+  if(!res.ok) throw new Error("Falló la subida a ImageKit.");
+  const data = await res.json();
+  return data.url;
+}
+
+function Header({ user, onLogout }){
+  return (
+    <header className="top">
+      <div className="brand">
+        <div className="brand-mark">SA</div>
+        <div>
+          <h1>Silhoe Academy</h1>
+          <span className="tag">educación informal</span>
+        </div>
+      </div>
+      {user && (
+        <div className="top-right">
+          <span style={{color:"var(--amber)", fontSize:"0.85rem"}}>Modo instructor</span>
+          <button className="ghost" style={{borderColor:"rgba(255,255,255,0.3)", color:"var(--paper)"}} onClick={onLogout}>Salir</button>
+        </div>
+      )}
+    </header>
+  );
+}
+
+function InstructorLogin(){
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const login = async () => {
+    setError(""); setLoading(true);
+    try{
+      await window.__fb.signInWithEmailAndPassword(window.__firebaseAuth, email, password);
+    }catch(e){
+      setError("Correo o contraseña incorrectos.");
+    }
+    setLoading(false);
+  };
+
+  return (
+    <main>
+      <div className="login-box">
+        <h2>Acceso instructor</h2>
+        <p className="lead" style={{margin:"4px 0 20px"}}>Inicia sesión para gestionar tus cursos.</p>
+        <div className="card">
+          <div className="field">
+            <label>Correo</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
+          </div>
+          <div className="field">
+            <label>Contraseña</label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+          </div>
+          {error && <div className="error-msg">{error}</div>}
+          <button className="primary" style={{width:"100%", marginTop:6}} disabled={loading} onClick={login}>
+            {loading ? "Entrando…" : "Entrar"}
+          </button>
+        </div>
+        <p className="note">Tu cuenta de instructor se crea una sola vez desde el panel de Firebase (Authentication → Users → Add user), no desde aquí.</p>
+      </div>
+    </main>
+  );
+}
+
+function InstructorView(){
+  const [courses, setCourses] = useState(null);
+  const [creating, setCreating] = useState(false);
+  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
+  const [openCourseId, setOpenCourseId] = useState(null);
+  const [error, setError] = useState("");
+
+  const loadCourses = async () => {
+    const { collection, getDocs } = window.__fb;
+    const snap = await getDocs(collection(window.__firestoreDb, "courses"));
+    const list = [];
+    snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+    list.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+    setCourses(list);
+  };
+
+  useEffect(() => { loadCourses(); }, []);
+
+  const createCourse = async () => {
+    if(!title.trim()) return;
+    setError("");
+    const { doc, setDoc } = window.__fb;
+    const code = genCode();
+    try{
+      await setDoc(doc(window.__firestoreDb, "courses", code), {
+        title: title.trim(),
+        description: desc.trim(),
+        accessCode: code,
+        lessons: [],
+        createdAt: Date.now(),
+        instructorUid: window.__firebaseAuth.currentUser.uid
+      });
+      setTitle(""); setDesc(""); setCreating(false);
+      setOpenCourseId(code);
+      loadCourses();
+    }catch(e){
+      setError("No se pudo crear el curso. Revisa las reglas de Firestore.");
+    }
+  };
+
+  const removeCourse = async (courseId) => {
+    const { doc, deleteDoc } = window.__fb;
+    await deleteDoc(doc(window.__firestoreDb, "courses", courseId));
+    loadCourses();
+  };
+
+  if(courses === null){
+    return <main><p className="lead">Cargando cursos…</p></main>;
+  }
+
+  return (
+    <main>
+      <div className="section-title">
+        <div>
+          <h2>Tus cursos</h2>
+          <p className="lead" style={{margin:"6px 0 0"}}>Crea un curso, agrégale lecciones con su video, y comparte el código de acceso con tus estudiantes.</p>
+        </div>
+        {!creating && <button className="primary" onClick={() => setCreating(true)}>+ Nuevo curso</button>}
+      </div>
+
+      {creating && (
+        <div className="card">
+          <h3 style={{marginBottom:14}}>Nuevo curso</h3>
+          <div className="field">
+            <label>Título del curso</label>
+            <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Ej. Introducción a la fotografía digital" />
+          </div>
+          <div className="field">
+            <label>Descripción breve</label>
+            <textarea rows="2" value={desc} onChange={e => setDesc(e.target.value)} placeholder="¿De qué trata el curso?" />
+          </div>
+          {error && <div className="error-msg">{error}</div>}
+          <div className="row">
+            <button className="primary" onClick={createCourse}>Crear curso</button>
+            <button className="ghost" onClick={() => setCreating(false)}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
+      {courses.length === 0 && !creating && (
+        <div className="empty">
+          <h3>Todavía no tienes cursos</h3>
+          <p>Crea el primero para generar tu código de acceso.</p>
+        </div>
+      )}
+
+      {courses.map(c => (
+        <CourseEditorCard
+          key={c.id}
+          course={c}
+          open={openCourseId === c.id}
+          onToggle={() => setOpenCourseId(openCourseId === c.id ? null : c.id)}
+          onChanged={loadCourses}
+          onRemove={() => removeCourse(c.id)}
+        />
+      ))}
+
+      <p className="note">Videos: enlaza YouTube/Vimeo no listado (se reproducen embebidos, sin salir de la app). Presentaciones: se suben directo a tu almacenamiento en ImageKit.</p>
+    </main>
+  );
+}
+
+function CourseEditorCard({ course, open, onToggle, onChanged, onRemove }){
+  const [lTitle, setLTitle] = useState("");
+  const [lVideo, setLVideo] = useState("");
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+
+  const submitLesson = async () => {
+    if(!lTitle.trim()) return;
+    setError(""); setUploading(true);
+    try{
+      let slidesUrl = "";
+      if(file){
+        slidesUrl = await uploadToImageKit(file);
+      }
+      const { doc, updateDoc, arrayUnion } = window.__fb;
+      await updateDoc(doc(window.__firestoreDb, "courses", course.id), {
+        lessons: arrayUnion({
+          id: "l_" + Date.now(),
+          title: lTitle.trim(),
+          videoUrl: lVideo.trim(),
+          slidesUrl
+        })
+      });
+      setLTitle(""); setLVideo(""); setFile(null);
+      onChanged();
+    }catch(e){
+      setError("No se pudo agregar la lección. " + e.message);
+    }
+    setUploading(false);
+  };
+
+  return (
+    <div className="card">
+      <div className="course-card">
+        <div style={{flex:1}}>
+          <h3>{course.title}</h3>
+          {course.description && <p>{course.description}</p>}
+          <span className="code-pill">Código: {course.accessCode}</span>
+        </div>
+        <button className="ghost" onClick={onToggle}>{open ? "Cerrar" : "Gestionar"}</button>
+      </div>
+
+      {open && (
+        <>
+          <ul className="lesson-list">
+            {(course.lessons || []).length === 0 && <li style={{color:"var(--ink-muted)"}}>Aún no hay lecciones.</li>}
+            {(course.lessons || []).map((l, i) => (
+              <li key={l.id}>
+                <span className="name"><span className="lesson-num">{i+1}</span>{l.title}</span>
+                <span style={{color:"var(--ink-muted)", fontSize:"0.8rem"}}>
+                  {l.videoUrl ? "video ✓" : "sin video"}{l.slidesUrl ? " · slides ✓" : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="add-lesson-form">
+            <div className="field">
+              <label>Título de la lección</label>
+              <input value={lTitle} onChange={e => setLTitle(e.target.value)} placeholder="Ej. Composición y encuadre" />
+            </div>
+            <div className="row">
+              <div className="field">
+                <label>Enlace del video (YouTube o Vimeo, no listado)</label>
+                <input value={lVideo} onChange={e => setLVideo(e.target.value)} placeholder="https://youtu.be/..." />
+              </div>
+              <div className="field">
+                <label>Presentación (PDF o PPTX, opcional)</label>
+                <label className={"file-input-wrap" + (file ? " has-file" : "")}>
+                  {file ? file.name : "Toca para elegir archivo"}
+                  <input type="file" accept=".pdf,.ppt,.pptx" style={{display:"none"}}
+                    onChange={e => setFile(e.target.files[0] || null)} />
+                </label>
+              </div>
+            </div>
+            {error && <div className="error-msg">{error}</div>}
+            <button className="primary" disabled={uploading} onClick={submitLesson}>
+              {uploading ? "Subiendo…" : "Agregar lección"}
+            </button>
+          </div>
+
+          <div style={{marginTop:18, textAlign:"right"}}>
+            <button className="ghost" onClick={onRemove}>Eliminar curso</button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function StudentView(){
+  const [username, setUsername] = useState("");
+  const [code, setCode] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [session, setSession] = useState(null);
+  const [activeLessonId, setActiveLessonId] = useState(null);
+
+  const enter = async () => {
+    setError("");
+    if(!username.trim() || !code.trim()){
+      setError("Escribe tu usuario y el código de acceso.");
+      return;
+    }
+    setLoading(true);
+    try{
+      const { doc, getDoc } = window.__fb;
+      const cleanCode = code.trim().toUpperCase();
+      const snap = await getDoc(doc(window.__firestoreDb, "courses", cleanCode));
+      if(!snap.exists()){
+        setError("Ese código no corresponde a ningún curso.");
+        setLoading(false);
+        return;
+      }
+      const courseData = { id: snap.id, ...snap.data() };
+      setSession({ username: username.trim(), course: courseData });
+      setActiveLessonId((courseData.lessons && courseData.lessons[0]) ? courseData.lessons[0].id : null);
+    }catch(e){
+      setError("No se pudo verificar el código. Intenta de nuevo.");
+    }
+    setLoading(false);
+  };
+
+  if(!session){
+    return (
+      <main>
+        <div className="login-box">
+          <h2>Entrar a un curso</h2>
+          <p className="lead" style={{margin:"4px 0 20px"}}>Escribe tu usuario y el código que te compartió tu instructor.</p>
+          <div className="card">
+            <div className="field">
+              <label>Usuario</label>
+              <input value={username} onChange={e => setUsername(e.target.value)} placeholder="Tu nombre" />
+            </div>
+            <div className="field">
+              <label>Código de acceso</label>
+              <input value={code} onChange={e => setCode(e.target.value)} placeholder="Ej. 7K2PXQ" style={{textTransform:"uppercase"}} />
+            </div>
+            {error && <div className="error-msg">{error}</div>}
+            <button className="primary" style={{width:"100%", marginTop:6}} disabled={loading} onClick={enter}>
+              {loading ? "Verificando…" : "Entrar"}
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  const course = session.course;
+  const lessons = course.lessons || [];
+  const activeLesson = lessons.find(l => l.id === activeLessonId);
+  const embedUrl = activeLesson ? youTubeEmbed(activeLesson.videoUrl) : null;
+
+  return (
+    <main>
+      <div className="student-header">
+        <div>
+          <h2>{course.title}</h2>
+          {course.description && <p style={{color:"var(--ink-muted)", margin:"4px 0 0", fontSize:"0.9rem"}}>{course.description}</p>}
+        </div>
+        <span className="who">Conectado como <strong>{session.username}</strong></span>
+      </div>
+
+      {lessons.length === 0 ? (
+        <div className="empty">
+          <h3>Este curso aún no tiene lecciones</h3>
+          <p>Vuelve pronto — el instructor las está preparando.</p>
+        </div>
+      ) : (
+        <div className="card">
+          <ul className="lesson-list">
+            {lessons.map((l,i) => (
+              <li key={l.id} style={{cursor:"pointer"}} onClick={() => setActiveLessonId(l.id)}>
+                <span className="name">
+                  <span className="lesson-num" style={{background: activeLessonId===l.id ? "var(--amber-deep)" : "var(--navy)"}}>{i+1}</span>
+                  {l.title}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          {activeLesson && (
+            <div className="lesson-detail">
+              <h3>{activeLesson.title}</h3>
+              {embedUrl ? (
+                <div className="video-embed">
+                  <iframe src={embedUrl} title={activeLesson.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                </div>
+              ) : (
+                <p style={{color:"var(--ink-muted)", fontSize:"0.88rem"}}>Esta lección todavía no tiene video.</p>
+              )}
+              {activeLesson.slidesUrl && (
+                <a className="slides-link" href={activeLesson.slidesUrl} target="_blank" rel="noopener noreferrer">Ver presentación →</a>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div style={{textAlign:"right", marginTop:16}}>
+        <button className="ghost" onClick={() => setSession(null)}>Salir</button>
+      </div>
+    </main>
+  );
+}
+
+function App(){
+  const [ready, setReady] = useState(false);
+  const [user, setUser] = useState(undefined); // undefined = cargando, null = no logueado
+  const [role, setRole] = useState("student");
+
+  useEffect(() => {
+    const onReady = () => {
+      setReady(true);
+      window.__fb.onAuthStateChanged(window.__firebaseAuth, (u) => {
+        setUser(u || null);
+        if(u) setRole("instructor");
+      });
+    };
+    if(window.__firebaseAuth){ onReady(); }
+    else { window.addEventListener("firebase-ready", onReady, { once:true }); }
+  }, []);
+
+  if(!ready || user === undefined){
+    return <div style={{padding:40, color:"var(--ink-muted)"}}>Cargando…</div>;
+  }
+
+  const logout = () => window.__fb.signOut(window.__firebaseAuth);
+
+  return (
+    <>
+      <Header user={user} onLogout={logout} />
+      {role === "instructor"
+        ? (user ? <InstructorView /> : <InstructorLogin />)
+        : <StudentView />
+      }
+      {role === "student" && (
+        <div style={{textAlign:"center", paddingBottom:30}}>
+          <button className="ghost" style={{border:"none", color:"var(--ink-muted)", textDecoration:"underline"}} onClick={() => setRole("instructor")}>¿Eres el instructor? Entra aquí</button>
+        </div>
+      )}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
